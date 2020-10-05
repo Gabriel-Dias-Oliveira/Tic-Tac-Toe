@@ -70,7 +70,7 @@ void printGameBoard(char **board){
     }
 }
 
-int vetifyLines(char **board, char character){
+int verifyLines(char **board, char character){
     int count = 0;
 
     for(int i = 0; i < MAX_BOARD_SIZE; i++){
@@ -90,7 +90,7 @@ int vetifyLines(char **board, char character){
     return 0;
 }
 
-int vetifyColumns(char **board, char character){
+int verifyColumns(char **board, char character){
     int count = 0;
 
     for(int i = 0; i < MAX_BOARD_SIZE; i++){
@@ -110,7 +110,7 @@ int vetifyColumns(char **board, char character){
     return 0;
 }
 
-int vetifyDiagonal(char **board, char character){
+int verifyDiagonal(char **board, char character){
     int count = 0, k = MAX_BOARD_SIZE - 1;
 
     for(int i = 0; i < MAX_BOARD_SIZE; i++){
@@ -132,17 +132,11 @@ int vetifyDiagonal(char **board, char character){
             break;
     }
 
-    if(count == MAX_BOARD_SIZE)
-        return 1;
-
-    return 0;
+    return (count == MAX_BOARD_SIZE);
 }
 
-int vetifyVictory(char **board, char character){
-    if(vetifyColumns(board, character) || vetifyLines(board, character) || vetifyDiagonal(board, character))
-        return 1;
-
-    return 0;
+int verifyVictory(char **board, char character){
+    return (verifyColumns(board, character) || verifyLines(board, character) || verifyDiagonal(board, character));
 }
 
 int getPlayerMove(char **board, int position, char character){
@@ -153,7 +147,7 @@ int getPlayerMove(char **board, int position, char character){
 
     board[line][column] = character;
 
-    return vetifyVictory(board, character);
+    return verifyVictory(board, character);
 }
 
 int verifyPlayerMove(char **board, int position){
@@ -162,17 +156,14 @@ int verifyPlayerMove(char **board, int position){
     line = (position - 1) / (MAX_BOARD_SIZE);
     column = (position - 1) % (MAX_BOARD_SIZE);
 
-    if(board[line][column] == 'X' || board[line][column] == 'O')
-        return 1;
-    
-    return 0;
+    return (board[line][column] == 'X' || board[line][column] == 'O');
 }
 
 void cleanGame(Game *game){
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < MAX_BOARD_SIZE; i++)
         free(game->gameboard[i]);
     
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < MAX_PLAYERS; i++)
         free(game->players[i].name);
 
     free(game->gameboard);

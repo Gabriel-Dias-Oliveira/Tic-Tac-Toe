@@ -34,9 +34,53 @@ int getBotPositiom(char **board){
     return position;
 }
 
+int checkVictory(Game *match, int verifyVictory, int player){
+    if(verifyVictory == 1){
+        printGameBoard(match->gameboard);
+        printf("Congratulations %s you win!\n", match->players[player].name);
+
+        return 1;
+    }
+
+    return 0;
+}
+
+int runGame(Game *match, int movementeCount){
+    int verifyVictory = 0, player = 0, position = 0;
+
+    if(movementeCount % 2 == 1){
+        position = getPosition(match->gameboard, match->players[0].name);
+
+        verifyVictory = getPlayerMove(match->gameboard, position, match->players[0].character);
+        player = 0;
+    }
+    else{
+        if(match->gameMode == 1){
+            printf("\nIt is the bot's turn\n");
+            position = getBotPositiom(match->gameboard);
+        }   
+        else{
+            position = getPosition(match->gameboard, match->players[1].name);
+        }
+        
+        verifyVictory = getPlayerMove(match->gameboard, position, match->players[1].character);
+
+        player = 1;
+    }
+
+    return checkVictory(match, verifyVictory, player);
+}
+
+void checkTie(Game *match, int movementeCount){
+    if(movementeCount == 10){
+        printGameBoard(match->gameboard);
+        printf("It is a tie!\n");
+    }
+}
+
 int main(){
     Game *match;
-    int movementeCount = 1, position = 0, verifyVictory = 0, player = 0;
+    int movementeCount = 1;
 
     match = malloc(sizeof(Game));
 
@@ -47,40 +91,14 @@ int main(){
     do{
         printGameBoard(match->gameboard);
 
-        if(movementeCount % 2 == 1){
-            position = getPosition(match->gameboard, match->players[0].name);
-
-            verifyVictory = getPlayerMove(match->gameboard, position, match->players[0].character);
-            player = 0;
-        }
-        else{
-            if(match->gameMode == 1){
-                printf("\nIt is the bot's turn\n");
-                position = getBotPositiom(match->gameboard);
-            }   
-            else{
-                position = getPosition(match->gameboard, match->players[1].name);
-            }
-            
-            verifyVictory = getPlayerMove(match->gameboard, position, match->players[1].character);
-
-            player = 1;
-        }
-
-        if(verifyVictory == 1){
-            printGameBoard(match->gameboard);
-
-            printf("Congratulations %s you win!\n", match->players[player].name);
+        if(runGame(match, movementeCount)){
             break;
         }
 
         movementeCount++;
     }while(movementeCount <= 9);
 
-    if(movementeCount == 10){
-        printGameBoard(match->gameboard);
-        printf("It is a tie!\n");
-    }
+    checkTie(match, movementeCount);   
 
     cleanGame(match);
 
